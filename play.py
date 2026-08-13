@@ -1,17 +1,24 @@
 ﻿from GameEngine.game import ConnectFour
 from GameEngine.gui import Gui
+
 from Agents.random_agent import RandomAgent
+from Agents.heuristic_agent import HeuristicAgent
 
 
 game = ConnectFour()
 gui = Gui()
+
 random_agent = RandomAgent()
+heuristic_agent = HeuristicAgent()
 
 
 print("Choose game mode:")
 print("1 - Human vs Human")
-print("2 - Human vs Random Bot")
-print("3 - Random Bot vs Random Bot")
+print("2 - Human vs Random")
+print("3 - Random vs Random")
+print("4 - Human vs Heuristic")
+print("5 - Random vs Heuristic")
+print("6 - Heuristic vs Heuristic")
 
 mode = input("Mode: ")
 
@@ -23,7 +30,6 @@ while not game.done:
 
     valid_actions = game.get_valid_actions()
 
-    # Human vs Human
     if mode == "1":
         action = input("Choose column (0-6): ")
 
@@ -33,7 +39,7 @@ while not game.done:
             print("Please enter a number.")
             continue
 
-    # Human vs Bot
+
     elif mode == "2":
         if game.current_player == 1:
             action = input("Choose column (0-6): ")
@@ -43,14 +49,60 @@ while not game.done:
             except ValueError:
                 print("Please enter a number.")
                 continue
+
         else:
             action = random_agent.select_action(valid_actions)
-            print("Bot chooses:", action)
+            print("Random bot:", action)
 
-    # Bot vs Bot
+
     elif mode == "3":
         action = random_agent.select_action(valid_actions)
-        print("Bot chooses:", action)
+        print("Random bot:", action)
+
+
+    elif mode == "4":
+        if game.current_player == 1:
+            action = input("Choose column (0-6): ")
+
+            try:
+                action = int(action)
+            except ValueError:
+                print("Please enter a number.")
+                continue
+
+        else:
+            action = heuristic_agent.select_action(
+                game.get_state(),
+                valid_actions,
+                game.current_player
+            )
+
+            print("Heuristic bot:", action)
+
+
+    elif mode == "5":
+        if game.current_player == 1:
+            action = random_agent.select_action(valid_actions)
+            print("Random bot:", action)
+
+        else:
+            action = heuristic_agent.select_action(
+                game.get_state(),
+                valid_actions,
+                game.current_player
+            )
+
+            print("Heuristic bot:", action)
+
+
+    elif mode == "6":
+        action = heuristic_agent.select_action(
+            game.get_state(),
+            valid_actions,
+            game.current_player
+        )
+
+        print("Heuristic bot:", action)
 
     else:
         print("Invalid game mode.")
