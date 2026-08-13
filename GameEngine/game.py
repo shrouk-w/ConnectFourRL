@@ -64,6 +64,17 @@ class ConnectFour:
         self.last_move = (row, action)
         self.move_count += 1
 
+        if self._check_win(row, action):
+            self.winner = self.current_player
+            self.done = True
+
+            return self.get_state()
+
+        if self.move_count == self.rows * self.columns:
+            self.done = True
+
+            return self.get_state()
+
         if self.current_player == 1:
             self.current_player = 2
         else:
@@ -82,13 +93,58 @@ class ConnectFour:
 
         raise ValueError("Column is full.")
 
-game = ConnectFour()
+    def _check_win(self, row, column):
+        player = self.board[row][column]
 
-game.step(3)
-print(game.board)
+        directions = [
+            (0, 1),  # poziomo
+            (1, 0),  # pionowo
+            (1, 1),  # przekątna \
+            (1, -1)  # przekątna /
+        ]
 
-game.step(3)
-print(game.board)
+        for row_change, column_change in directions:
+            count = 1
 
-game.step(4)
-print(game.board)
+            count += self._count_pieces(
+                row,
+                column,
+                row_change,
+                column_change,
+                player
+            )
+
+            count += self._count_pieces(
+                row,
+                column,
+                -row_change,
+                -column_change,
+                player
+            )
+
+            if count >= 4:
+                return True
+
+        return False
+
+    def _count_pieces(self, row, column, row_change, column_change, player):
+        count = 0
+
+        current_row = row + row_change
+        current_column = column + column_change
+
+        while (
+                current_row >= 0
+                and current_row < self.rows
+                and current_column >= 0
+                and current_column < self.columns
+        ):
+            if self.board[current_row][current_column] != player:
+                break
+
+            count += 1
+
+            current_row += row_change
+            current_column += column_change
+
+        return count
