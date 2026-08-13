@@ -49,3 +49,46 @@ class ConnectFour:
                 valid_actions.append(column)
 
         return valid_actions
+
+    def step(self, action):
+        if self.done:
+            raise ValueError("Game is already finished.")
+
+        if not self.is_valid_action(action):
+            raise ValueError("Invalid action.")
+
+        row = self._find_empty_row(action)
+
+        self.board[row][action] = self.current_player
+
+        self.last_move = (row, action)
+        self.move_count += 1
+
+        if self.current_player == 1:
+            self.current_player = 2
+        else:
+            self.current_player = 1
+
+        return self.get_state()
+
+    def _find_empty_row(self, column):
+        row = self.rows - 1
+
+        while row >= 0:
+            if self.board[row][column] == 0:
+                return row
+
+            row -= 1
+
+        raise ValueError("Column is full.")
+
+game = ConnectFour()
+
+game.step(3)
+print(game.board)
+
+game.step(3)
+print(game.board)
+
+game.step(4)
+print(game.board)
