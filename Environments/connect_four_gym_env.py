@@ -9,7 +9,7 @@ from Agents.random_agent import RandomAgent
 
 class ConnectFourGymEnv(gym.Env):
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__()
 
         self.game = ConnectFour()
