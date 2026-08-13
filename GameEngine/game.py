@@ -30,6 +30,10 @@ class ConnectFour:
         return self.board.copy()
 
     def is_valid_action(self, action):
+
+        if self.done:
+            return False
+
         if not isinstance(action, (int, np.integer)):
             return False
 
@@ -148,3 +152,18 @@ class ConnectFour:
             current_column += column_change
 
         return count
+
+    def get_action_mask(self):
+        mask = np.zeros(self.columns, dtype=np.int8)
+
+        for column in range(self.columns):
+            if self.is_valid_action(column):
+                mask[column] = 1
+
+        return mask
+
+    def is_draw(self):
+        if self.done and self.winner is None:
+            return True
+
+        return False
