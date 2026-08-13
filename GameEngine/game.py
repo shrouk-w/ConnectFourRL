@@ -29,8 +29,23 @@ class ConnectFour:
     def get_state(self):
         return self.board.copy()
 
-game = ConnectFour()
+    def is_valid_action(self, action):
+        if not isinstance(action, (int, np.integer)):
+            return False
 
-print(game.board)
-print("Current player:", game.current_player)
-print("Done:", game.done)
+        if action < 0 or action >= self.columns:
+            return False
+
+        if self.board[0][action] != 0:
+            return False
+
+        return True
+
+    def get_valid_actions(self):
+        valid_actions = []
+
+        for column in range(self.columns):
+            if self.is_valid_action(column):
+                valid_actions.append(column)
+
+        return valid_actions
