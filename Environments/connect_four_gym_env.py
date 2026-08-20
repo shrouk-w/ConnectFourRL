@@ -18,18 +18,18 @@ class ConnectFourGymEnv(gym.Env):
         self.action_space = spaces.Discrete(7)
 
         self.observation_space = spaces.Dict({
-            "observation": spaces.Box(
+            "observations": spaces.Box(
                 low=0,
                 high=1,
-                shape=(6, 7, 2),
-                dtype=np.int8
+                shape=(84,),
+                dtype=np.float32
             ),
 
             "action_mask": spaces.Box(
                 low=0,
                 high=1,
                 shape=(7,),
-                dtype=np.int8
+                dtype=np.float32
             )
         })
 
@@ -107,28 +107,27 @@ class ConnectFourGymEnv(gym.Env):
             {}
         )
 
-
     def _get_observation(self):
         board = self.game.get_state()
 
-        observation = np.zeros(
-            (6, 7, 2),
-            dtype=np.int8
-        )
+        observations = np.zeros(84, dtype=np.float32)
 
         for row in range(6):
             for column in range(7):
 
+                index = row * 7 + column
+
                 if board[row][column] == 1:
-                    observation[row][column][0] = 1
+                    observations[index] = 1
 
                 elif board[row][column] == 2:
-                    observation[row][column][1] = 1
+                    observations[42 + index] = 1
 
         action_mask = self.game.get_action_mask()
+        action_mask = action_mask.astype(np.float32)
 
         return {
-            "observation": observation,
+            "observations": observations,
             "action_mask": action_mask
         }
 

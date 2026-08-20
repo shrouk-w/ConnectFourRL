@@ -1,16 +1,16 @@
 ﻿import ray
 
 from ray.rllib.algorithms.ppo import PPOConfig
-from ray.rllib.connectors.env_to_module import FlattenObservations
 
 from Environments.connect_four_gym_env import ConnectFourGymEnv
 
 from pathlib import Path
 
+from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 
-def create_connector(env, spaces, device):
-    return FlattenObservations()
-
+from ray.rllib.examples.rl_modules.classes.action_masking_rlm import (
+    ActionMaskingTorchRLModule
+)
 
 if __name__ == "__main__":
 
@@ -25,13 +25,18 @@ if __name__ == "__main__":
 
         .env_runners(
             num_env_runners=4,
-            num_envs_per_env_runner=8,
-            env_to_module_connector=create_connector
+            num_envs_per_env_runner=8
         )
 
         .learners(
             num_learners=0,
             num_gpus_per_learner=1
+        )
+
+        .rl_module(
+            rl_module_spec=RLModuleSpec(
+                module_class=ActionMaskingTorchRLModule
+            )
         )
 
         .training(
@@ -59,7 +64,7 @@ if __name__ == "__main__":
         if (iteration + 1) % 10 == 0:
             checkpoint_path = (
                     Path("checkpoints")
-                    / f"ppo_vs_random_{iteration + 1}"
+                    / f"ppo_masked_vs_random_{iteration + 1}"
             )
 
             checkpoint_uri = checkpoint_path.resolve().as_uri()
