@@ -30,18 +30,18 @@ class ConnectFourEnv(AECEnv):
         self._action_space = spaces.Discrete(7)
 
         self._observation_space = spaces.Dict({
-            "observation": spaces.Box(
+            "observations": spaces.Box(
                 low=0,
                 high=1,
-                shape=(6, 7, 2),
-                dtype=np.int8
+                shape=(84,),
+                dtype=np.float32
             ),
 
             "action_mask": spaces.Box(
                 low=0,
                 high=1,
                 shape=(7,),
-                dtype=np.int8
+                dtype=np.float32
             )
         })
 
@@ -88,14 +88,10 @@ class ConnectFourEnv(AECEnv):
 
         self.agent_selection = self._agent_selector.reset()
 
-
     def observe(self, agent):
         board = self.game.get_state()
 
-        observation = np.zeros(
-            (6, 7, 2),
-            dtype=np.int8
-        )
+        observations = np.zeros(84, dtype=np.float32)
 
         if agent == "player_0":
             player_number = 1
@@ -106,20 +102,21 @@ class ConnectFourEnv(AECEnv):
 
         for row in range(6):
             for column in range(7):
+                index = row * 7 + column
 
                 if board[row][column] == player_number:
-                    observation[row][column][0] = 1
+                    observations[index] = 1
 
                 elif board[row][column] == opponent_number:
-                    observation[row][column][1] = 1
+                    observations[42 + index] = 1
 
-        action_mask = np.zeros(7, dtype=np.int8)
+        action_mask = np.zeros(7, dtype=np.float32)
 
         if agent == self.agent_selection and not self.game.done:
-            action_mask = self.game.get_action_mask()
+            action_mask = self.game.get_action_mask().astype(np.float32)
 
         return {
-            "observation": observation,
+            "observations": observations,
             "action_mask": action_mask
         }
 
